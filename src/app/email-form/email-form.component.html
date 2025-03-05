@@ -1,0 +1,9 @@
+<form (submit)="sendEmail()">
+    <input type="email" placeholder="Кому" [(ngModel)]="to" required /><br />
+    <input type="text" placeholder="Тема" [(ngModel)]="subject" required /><br />
+    <textarea placeholder="Текст повідомлення" [(ngModel)]="message"></textarea><br />
+    <input type="file" (change)="handleFileInput($event)" /><br />
+    <button type="submit">Відправити</button>
+  </form>
+  <p *ngIf="status">{{ status }}</p>
+  
