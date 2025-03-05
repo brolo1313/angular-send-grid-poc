@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SendGridService } from '../services/send-grid.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MailgunService } from '../services/mailgun.service';
 
 @Component({
   selector: 'app-email-form',
@@ -13,31 +14,23 @@ export class EmailFormComponent implements OnInit {
   status: string = '';
   attachment: any = null;
 
-  constructor(private fb: FormBuilder, private sendGridService: SendGridService) {
-
-  }
+  constructor(private fb: FormBuilder, private mailgunService: MailgunService) {}
 
   ngOnInit() {
     this.emailForm = this.fb.group({
-      to: ['brolo1341@gmail..com', [Validators.required]],
-      subject: ['Test', Validators.required],
-      message: ['with attachment']
+      to: ['test@example.com', [Validators.required, Validators.email]],
+      subject: ['Test Subject', Validators.required],
+      message: ['Hello from Angular & Mailgun!']
     });
   }
 
   handleFileInput(event: any) {
     const file = event.target.files[0];
-
     if (file) {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        const base64String = (reader.result as string).split(',')[1]; // Видаляємо data:image...
-        this.attachment = {
-          base64: base64String,
-          filename: file.name,
-          type: file.type
-        };
+      this.attachment = {
+        file,
+        filename: file.name,
+        type: file.type
       };
     }
   }
@@ -47,11 +40,12 @@ export class EmailFormComponent implements OnInit {
 
     const { to, subject, message } = this.emailForm.value;
 
-    console.log('this.emailForm.value', this.emailForm.value);
-    console.log('this.attachment', this.attachment);
-    // this.sendGridService.sendEmail(to, subject, message, this.attachment)
+    console.log(' this.emailForm.value', this.emailForm.value);
+    console.log(' this.attachment', this.attachment);
+
+    // this.mailgunService.sendEmail(to, subject, message, this.attachment)
     //   .subscribe({
-    //     next: () => this.status = 'Лист відправлено!',
+    //     next: () => this.status = 'Лист успішно відправлено!',
     //     error: err => this.status = `Помилка: ${err.message}`
     //   });
   }

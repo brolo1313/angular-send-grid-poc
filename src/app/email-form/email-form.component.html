@@ -1,9 +1,16 @@
 <form [formGroup]="emailForm" (ngSubmit)="sendEmail()">
-    <input type="email" placeholder="Кому" formControlName="to" required /><br />
-    <input type="text" placeholder="Тема" formControlName="subject" required /><br />
-    <textarea placeholder="Текст повідомлення" formControlName="message"></textarea><br />
+    <label>Email отримувача:</label>
+    <input type="email" formControlName="to">
     
-    <input type="file" (change)="handleFileInput($event)" /><br />
+    <label>Тема:</label>
+    <input type="text" formControlName="subject">
+    
+    <label>Повідомлення:</label>
+    <textarea formControlName="message"></textarea>
+  
+    <label>Додати вкладення:</label>
+    <input type="file" (change)="handleFileInput($event)">
+  
     <button type="submit" [disabled]="emailForm.invalid">Відправити</button>
   </form>
   
