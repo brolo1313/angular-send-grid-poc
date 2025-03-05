@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class SendGridService {
-  private SENDGRID_API_KEY = 'YOUR_SENDGRID_API_KEY'; // ⚠️ НЕБЕЗПЕЧНО (тільки для тесту)
+  private SENDGRID_API_KEY = 'YOUR_SENDGRID_API_KEY';
   private SENDGRID_URL = 'https://api.sendgrid.com/v3/mail/send';
 
   constructor(private http: HttpClient) {}
@@ -19,12 +19,11 @@ export class SendGridService {
 
     const emailData: any = {
       personalizations: [{ to: [{ email: to }] }],
-      from: { email: 'your_email@example.com' }, // Замінити на реальний email
+      from: { email: 'htmlbody921@gmail.com' },
       subject: subject,
       content: [{ type: 'text/plain', value: text }]
     };
 
-    // Якщо є файл – додаємо вкладення
     if (file) {
       emailData.attachments = [{
         content: file.base64,
