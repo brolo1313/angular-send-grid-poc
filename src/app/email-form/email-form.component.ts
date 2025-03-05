@@ -11,26 +11,32 @@ import { MailgunService } from '../services/mailgun.service';
 })
 export class EmailFormComponent implements OnInit {
   emailForm!: FormGroup;
-  status: string = '';
-  attachment: any = null;
+  attachment: any | null = null;
+  fileName: string = '';
 
-  constructor(private fb: FormBuilder, private mailgunService: MailgunService) {}
+  constructor(private fb: FormBuilder) { }
 
   ngOnInit() {
     this.emailForm = this.fb.group({
       to: ['test@example.com', [Validators.required, Validators.email]],
       subject: ['Test Subject', Validators.required],
-      message: ['Hello from Angular & Mailgun!']
+      message: ['Hello from Angular!']
     });
   }
 
   handleFileInput(event: any) {
     const file = event.target.files[0];
+
     if (file) {
-      this.attachment = {
-        file,
-        filename: file.name,
-        type: file.type
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const base64String = (reader.result as string).split(',')[1]; // Видаляємо data:image...
+        this.attachment = {
+          base64: base64String,
+          filename: file.name,
+          type: file.type
+        };
       };
     }
   }
@@ -40,13 +46,14 @@ export class EmailFormComponent implements OnInit {
 
     const { to, subject, message } = this.emailForm.value;
 
-    console.log(' this.emailForm.value', this.emailForm.value);
-    console.log(' this.attachment', this.attachment);
+    let emailBody = message;
 
-    // this.mailgunService.sendEmail(to, subject, message, this.attachment)
-    //   .subscribe({
-    //     next: () => this.status = 'Лист успішно відправлено!',
-    //     error: err => this.status = `Помилка: ${err.message}`
-    //   });
+    if (this.attachment) {
+      emailBody += `\n\n=== Вкладення: ${this.attachment.filename} ===\n${this.attachment.base64}`;
+    }
+
+    const mailtoLink = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
+    window.location.href = mailtoLink;
   }
+
 }
